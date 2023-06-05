@@ -1,8 +1,9 @@
 using Microsoft.Data.Sqlite;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nickvision.Keyring;
 
@@ -12,7 +13,7 @@ namespace Nickvision.Keyring;
 internal class Store : IDisposable
 {
     private bool _disposed;
-    private SqliteConnection _database;
+    private readonly SqliteConnection _database;
     
     /// <summary>
     /// Constructs a Store
@@ -37,6 +38,7 @@ internal class Store : IDisposable
     /// <param name="overwrite">Whether or not to overwrite an existing Store at the path</param>
     /// <exception cref="FileFormatException">Thrown if the path does not end in the .nring extension</exception>
     /// <exception cref="IOException">Thrown if a Store exists at the provided path and overwrite is false</exception>
+    /// <returns>The new Store object</returns>
     public static Store Create(string path, string password, bool overwrite)
     {
         if(Path.GetExtension(path) != ".nring")
@@ -71,6 +73,7 @@ internal class Store : IDisposable
     /// <exception cref="FileFormatException">Thrown if the path does not end in the .nring extension</exception>
     /// <exception cref="FileNotFoundException">Thrown if a Store does not exist at the provided path</exception>
     /// <exception cref="ArgumentException">Thrown if the Store connection cannot be established</exception>
+    /// <returns>The loaded Store object</returns>
     public static Store Load(string path, string password)
     {
         if(Path.GetExtension(path) != ".nring")
@@ -117,17 +120,108 @@ internal class Store : IDisposable
         }
         if (disposing)
         {
-            if (_database != null)
+            if(_database.State == ConnectionState.Open)
             {
-                if(_database.State == ConnectionState.Open)
-                {
-                    _database.Close();   
-                }
-                _database.Dispose();
+                _database.Close();
             }
+            _database.Dispose();
         }
         _disposed = true;
     }
 
+    /// <summary>
+    /// Lookups a credential by id
+    /// </summary>
+    /// <param name="id">The id of the credential</param>
+    /// <returns>The Credential object if found, else null</returns>
+    public async Task<Credential?> LookupCredentialAsync(int id)
+    {
+        await _database.OpenAsync();
+        using var cmdQueryCredential = _database.CreateCommand();
+        cmdQueryCredential.CommandText = "SELECT * FROM credentials where id = $id";
+        cmdQueryCredential.Parameters.AddWithValue("$id", id);
+        using var readQueryCredential = await cmdQueryCredential.ExecuteReaderAsync();
+        Credential? credential = null;
+        if (readQueryCredential.HasRows)
+        {
+            await readQueryCredential.ReadAsync();
+            credential = new Credential(readQueryCredential.GetInt32(0), readQueryCredential.GetString(1), readQueryCredential.IsDBNull(2) ? null : new Uri(readQueryCredential.GetString(2)), readQueryCredential.IsDBNull(3) ? null : readQueryCredential.GetString(3), readQueryCredential.IsDBNull(4) ? null : readQueryCredential.GetString(4));
+        }
+        await _database.CloseAsync();
+        return credential;
+    }
+
+    /// <summary>
+    /// Lookups credentials by name
+    /// </summary>
+    /// <param name="name">The name of the credentials to find</param>
+    /// <returns>The list of Credential objects found</returns>
+    public async Task<List<Credential>> LookupCredentialsAsync(string name)
+    {
+        await _database.OpenAsync();
+        using var cmdQueryCredentials = _database.CreateCommand();
+        cmdQueryCredentials.CommandText = "SELECT * FROM credentials where name = $name";
+        cmdQueryCredentials.Parameters.AddWithValue("$name", name);
+        using var readQueryCredentials = await cmdQueryCredentials.ExecuteReaderAsync();
+        var credentials = new List<Credential>();
+        while (await readQueryCredentials.ReadAsync())
+        {
+            credentials.Add(new Credential(readQueryCredentials.GetInt32(0), readQueryCredentials.GetString(1), readQueryCredentials.IsDBNull(2) ? null : new Uri(readQueryCredentials.GetString(2)), readQueryCredentials.IsDBNull(3) ? null : readQueryCredentials.GetString(3), readQueryCredentials.IsDBNull(4) ? null : readQueryCredentials.GetString(4)));
+        }
+        await _database.CloseAsync();
+        return credentials;
+    }
     
+    /// <summary>
+    /// Adds a Credential to the store
+    /// </summary>
+    /// <param name="credential">The Credential object to add</param>
+    public async Task<bool> AddCredentialAsync(Credential credential)
+    {
+        await _database.OpenAsync();
+        using var cmdAddCredential = _database.CreateCommand();
+        cmdAddCredential.CommandText = "INSERT INTO credentials (id, name, uri, username, password) VALUES ($id, $name, $uri, $username, $password)";
+        cmdAddCredential.Parameters.AddWithValue("$id", credential.Id);
+        cmdAddCredential.Parameters.AddWithValue("$name", credential.Name);
+        cmdAddCredential.Parameters.AddWithValue("$uri", credential.Uri == null ? null : credential.Uri.ToString());
+        cmdAddCredential.Parameters.AddWithValue("$username", credential.Username);
+        cmdAddCredential.Parameters.AddWithValue("$password", credential.Password);
+        var result = await cmdAddCredential.ExecuteNonQueryAsync() > 0;
+        await _database.CloseAsync();
+        return result;
+    }
+
+    /// <summary>
+    /// Updates a Credential in the store
+    /// </summary>
+    /// <param name="credential">The Credential object to update</param>
+    public async Task<bool> UpdateCredentialAsync(Credential credential)
+    {
+        await _database.OpenAsync();
+        using var cmdUpdateCredential = _database.CreateCommand();
+        cmdUpdateCredential.CommandText = "UPDATE credentials SET name = $name, uri = $uri, username = $username, password = $password where id = $id";
+        cmdUpdateCredential.Parameters.AddWithValue("$name", credential.Name);
+        cmdUpdateCredential.Parameters.AddWithValue("$uri", credential.Uri == null ? null : credential.Uri.ToString());
+        cmdUpdateCredential.Parameters.AddWithValue("$username", credential.Username);
+        cmdUpdateCredential.Parameters.AddWithValue("$password", credential.Password);
+        cmdUpdateCredential.Parameters.AddWithValue("$id", credential.Id);
+        var result = await cmdUpdateCredential.ExecuteNonQueryAsync() > 0;
+        await _database.CloseAsync();
+        return true;
+    }
+
+    /// <summary>
+    /// Removes a Credential from the store
+    /// </summary>
+    /// <param name="id">The id of the credential to remove</param>
+    public async Task<bool> DeleteCredentialAsync(int id)
+    {
+        await _database.OpenAsync();
+        using var cmdDeleteCredential = _database.CreateCommand();
+        cmdDeleteCredential.CommandText = "DELETE FROM credentials WHERE id = $id";
+        cmdDeleteCredential.Parameters.AddWithValue("$id", id);
+        var result = await cmdDeleteCredential.ExecuteNonQueryAsync() > 0;
+        await _database.CloseAsync();
+        return result;
+    }
 }
