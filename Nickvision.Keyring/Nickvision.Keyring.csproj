@@ -11,4 +11,10 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.IO.Packaging" Version="7.0.0" />
+	<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="7.0.5" />
+	<PackageReference Include="SQLitePCLRaw.bundle_e_sqlcipher" Version="2.1.5" />
+  </ItemGroup>
+
 </Project>
