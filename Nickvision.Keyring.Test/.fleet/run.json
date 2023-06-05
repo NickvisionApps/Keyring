@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "dotnet",
+            "name": "Nickvision.Keyring Test Program",
+            "projectPath": "Nickvision.Keyring.Test.csproj",
+            "args": [],
+        },
+        
+    ]
+}

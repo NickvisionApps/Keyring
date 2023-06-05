@@ -18,25 +18,34 @@ public class Keyring : IDisposable
     public string Name => _store.Name;
 
     /// <summary>
-    /// Constructs a Keyring. The Keyring will first attempt to load the Store. If the Store doesn't exist, it will create a new Store
+    /// Constructs a Keyring
+    /// </summary>
+    /// <param name="store">The Keyring's store</param>
+    private Keyring(Store store)
+    {
+        _disposed = false;
+        _store = store;
+    }
+
+    /// <summary>
+    /// Accesses a Keyring. The Keyring will first attempt to load the Store. If the Store doesn't exist, it will create a new Store.
     /// </summary>
     /// <param name="name">The name of the Store</param>
     /// <param name="password">The password of the Store</param>
-    /// <exception cref="ArgumentException">Thrown if the Store exists and the connection cannot be established</exception>
-    public Keyring(string name, string password)
+    /// <returns>The Keyring. If the Keyring exists and cannot be loaded, null will be returned</returns>
+    public static Keyring? Access(string name, string password)
     {
-        _disposed = false;
         try
         {
-            _store = Store.Load(name, password);
+            return new Keyring(Store.Load(name, password));
         }
         catch (ArgumentException e)
         {
-           throw;
+            return null;
         }
         catch
         {
-            _store = Store.Create(name, password, false);
+            return new Keyring(Store.Create(name, password, false));
         }
     }
 
