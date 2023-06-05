@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <PackageId>Nickvision.Keyring</PackageId>
+    <Version>2023.6.0</Version>
+    <Company>Nickvision</Company>
+    <Authors>Nickvision</Authors>
+    <Description>Store credentials in a secure and easy fashion</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+</Project>

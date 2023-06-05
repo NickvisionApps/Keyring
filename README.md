@@ -1,0 +1,16 @@
+# Nickvision.Keyring
+
+ **Store credentials in a secure and easy fashion**
+
+# Features
+- A keyring backed by SQLCipher
+
+# Chat
+<a href='https://matrix.to/#/#nickvision:matrix.org'><img width='140' alt='Join our room' src='https://user-images.githubusercontent.com/17648453/196094077-c896527d-af6d-4b43-a5d8-e34a00ffd8f6.png'/></a>
+
+# Dependencies
+- [.NET 7](https://dotnet.microsoft.com/en-us/)
+
+# Code of Conduct
+
+This project follows the [GNOME Code of Conduct](https://wiki.gnome.org/Foundation/CodeOfConduct).
