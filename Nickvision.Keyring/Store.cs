@@ -114,6 +114,13 @@ internal class Store : IDisposable
     }
     
     /// <summary>
+    /// Gets whether or not a Store exists
+    /// </summary>
+    /// <param name="name">The name of the Store</param>
+    /// <returns>True if exists, else false</returns>
+    public static bool Exists(string name) => File.Exists($"{StoreDir}{name}.nring");
+
+    /// <summary>
     /// Frees resources used by the Store object
     /// </summary>
     public void Dispose()

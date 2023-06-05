@@ -50,6 +50,13 @@ public class Keyring : IDisposable
     }
 
     /// <summary>
+    /// Gets whether or not a Keyring exists
+    /// </summary>
+    /// <param name="name">The name of the Keyring</param>
+    /// <returns>True if exists, else false</returns>
+    public static bool Exists(string name) => Store.Exists(name);
+
+    /// <summary>
     /// Frees resources used by the Keyring object
     /// </summary>
     public void Dispose()
