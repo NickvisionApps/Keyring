@@ -12,15 +12,27 @@ namespace Nickvision.Keyring;
 /// </summary>
 internal class Store : IDisposable
 {
+    /// <summary>
+    /// The directory to store Stores
+    /// </summary>
+    public static readonly string StoreDir = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}{Path.DirectorySeparatorChar}Nickvision{Path.DirectorySeparatorChar}Keyring{Path.DirectorySeparatorChar}";
+
     private bool _disposed;
     private readonly SqliteConnection _database;
+
+    /// <summary>
+    /// The name of the store
+    /// </summary>
+    public string Name { get; init; }
     
     /// <summary>
     /// Constructs a Store
     /// </summary>
+    /// <param name="name">The name of the Store</param>
     /// <param name="database">The database connection for the store</param>
-    private Store(SqliteConnection database)
+    private Store(string name, SqliteConnection database)
     {
+        Name = name;
         _disposed = false;
         _database = database;
         _database.Open();
@@ -29,22 +41,22 @@ internal class Store : IDisposable
         cmdTableCredentials.ExecuteNonQuery();
         _database.Close();
     }
-    
+
     /// <summary>
     /// Creates a new Store
     /// </summary>
-    /// <param name="path">The path at which to store the Store</param>
+    /// <param name="name">The name of the Store</param>
     /// <param name="password">The password to use to encrypt the Store</param>
     /// <param name="overwrite">Whether or not to overwrite an existing Store at the path</param>
-    /// <exception cref="FileFormatException">Thrown if the path does not end in the .nring extension</exception>
     /// <exception cref="IOException">Thrown if a Store exists at the provided path and overwrite is false</exception>
     /// <returns>The new Store object</returns>
-    public static Store Create(string path, string password, bool overwrite)
+    public static Store Create(string name, string password, bool overwrite)
     {
-        if(Path.GetExtension(path) != ".nring")
+        if(!Directory.Exists(StoreDir))
         {
-            throw new FileFormatException("The path must have the file extension: .nring");
+            Directory.CreateDirectory(StoreDir);
         }
+        var path = $"{StoreDir}{name}.nring";
         if(File.Exists(path))
         {
             if(overwrite)
@@ -53,10 +65,10 @@ internal class Store : IDisposable
             }
             else
             {
-                throw new IOException("A Store already exists at the provided path.");
+                throw new IOException("A Store already exists with the provided name.");
             }
         }
-        return new Store(new SqliteConnection(new SqliteConnectionStringBuilder()
+        return new Store(name, new SqliteConnection(new SqliteConnectionStringBuilder()
         {
             DataSource = path,
             Mode = SqliteOpenMode.ReadWriteCreate,
@@ -68,25 +80,21 @@ internal class Store : IDisposable
     /// <summary>
     /// Loads an existing Store
     /// </summary>
-    /// <param name="path">The path at which to access the Store</param>
+    /// <param name="name">The name of the Store</param>
     /// <param name="password">The password to use to access the Store</param>
-    /// <exception cref="FileFormatException">Thrown if the path does not end in the .nring extension</exception>
     /// <exception cref="FileNotFoundException">Thrown if a Store does not exist at the provided path</exception>
     /// <exception cref="ArgumentException">Thrown if the Store connection cannot be established</exception>
     /// <returns>The loaded Store object</returns>
-    public static Store Load(string path, string password)
+    public static Store Load(string name, string password)
     {
-        if(Path.GetExtension(path) != ".nring")
-        {
-            throw new FileFormatException("The path must have the file extension: .nring");
-        }
+        var path = $"{StoreDir}{name}.nring";
         if(!File.Exists(path))
         {
-            throw new FileNotFoundException("A Store is not found at the provided path.");
+            throw new FileNotFoundException("A Store is not found with the provided name.");
         }
         try
         {
-            return new Store(new SqliteConnection(new SqliteConnectionStringBuilder()
+            return new Store(name, new SqliteConnection(new SqliteConnectionStringBuilder()
             {
                 DataSource = path,
                 Mode = SqliteOpenMode.ReadWrite,
@@ -96,7 +104,7 @@ internal class Store : IDisposable
         }
         catch
         {
-            throw new ArgumentException("Unable to access the Store. Make sure the path and password are correct.");
+            throw new ArgumentException("Unable to access the Store. Make sure the password is correct.");
         }
     }
     
@@ -221,7 +229,7 @@ internal class Store : IDisposable
         cmdDeleteCredential.CommandText = "DELETE FROM credentials WHERE id = $id";
         cmdDeleteCredential.Parameters.AddWithValue("$id", id);
         var result = await cmdDeleteCredential.ExecuteNonQueryAsync() > 0;
-        await _database.CloseAsync();
+        await _database.CloseAsync();Yeah even if `SaveConfig
         return result;
     }
 }
