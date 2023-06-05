@@ -23,7 +23,9 @@ internal class Store : IDisposable
         _disposed = false;
         _database = database;
         _database.Open();
-        Thread.Sleep(100);
+        using var cmdTableCredentials = _database!.CreateCommand();
+        cmdTableCredentials.CommandText = "CREATE TABLE IF NOT EXISTS credentials (id TEXT PRIMARY KEY, name TEXT, uri TEXT, username TEXT, password TEXT)";
+        cmdTableCredentials.ExecuteNonQuery();
         _database.Close();
     }
     
@@ -126,4 +128,6 @@ internal class Store : IDisposable
         }
         _disposed = true;
     }
+
+    
 }

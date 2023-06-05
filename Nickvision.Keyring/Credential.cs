@@ -10,7 +10,7 @@ public class Credential
     /// <summary>
     /// The id of the credential
     /// </summary>    
-    public Guid Id { get; init; }
+    public int Id { get; init; }
     /// <summary>
     /// The name of the credential
     /// </summary>    
@@ -37,7 +37,7 @@ public class Credential
     /// <param name="password">The password of the credential</param>
     public Credential(string name, Uri? uri, string? username, string? password)
     {
-        Id = new Guid();
+        Id = Guid.NewGuid().GetHashCode();
         Name = name;
         Uri = uri;
         Username = username;
@@ -52,7 +52,7 @@ public class Credential
     /// <param name="uri">The uri of the credential</param>
     /// <param name="username">The username of the credential</param>
     /// <param name="password">The password of the credential</param>
-    internal Credential(Guid id, string name, Uri? uri, string? username, string? password)
+    internal Credential(int id, string name, Uri? uri, string? username, string? password)
     {
         Id = id;
         Uri = uri;
