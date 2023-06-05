@@ -28,7 +28,7 @@ public class Keyring : IDisposable
         _disposed = false;
         try
         {
-            _store = Store.Load(Name, password);
+            _store = Store.Load(name, password);
         }
         catch (ArgumentException e)
         {
@@ -36,7 +36,7 @@ public class Keyring : IDisposable
         }
         catch
         {
-            _store = Store.Create(Name, password, false);
+            _store = Store.Create(name, password, false);
         }
     }
 
