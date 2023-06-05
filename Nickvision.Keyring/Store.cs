@@ -229,7 +229,7 @@ internal class Store : IDisposable
         cmdDeleteCredential.CommandText = "DELETE FROM credentials WHERE id = $id";
         cmdDeleteCredential.Parameters.AddWithValue("$id", id);
         var result = await cmdDeleteCredential.ExecuteNonQueryAsync() > 0;
-        await _database.CloseAsync();Yeah even if `SaveConfig
+        await _database.CloseAsync();
         return result;
     }
 }
