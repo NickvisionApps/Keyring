@@ -21,10 +21,15 @@ internal class Store : IDisposable
     private readonly SqliteConnection _database;
 
     /// <summary>
-    /// The name of the store
+    /// The name of the Store
     /// </summary>
     public string Name { get; init; }
     
+    /// <summary>
+    /// The location of the Store on disk
+    /// </summary>
+    public string Location => $"{StoreDir}{Name}.nring";
+
     /// <summary>
     /// Constructs a Store
     /// </summary>
@@ -135,6 +140,43 @@ internal class Store : IDisposable
             _database.Dispose();
         }
         _disposed = true;
+    }
+
+    /// <summary>
+    /// Destroys the Store and all its data from disk. Once this method is called, this object should not be used anymore.
+    /// </summary>
+    /// <returns>True if successful, else false</returns>
+    public bool Destroy()
+    {
+        Dispose();
+        try
+        {
+            File.Delete(Location);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Gets all credentials from the Store
+    /// </summary>
+    /// <returns>The list of Credential objects</returns>
+    public async Task<List<Credential>> GetAllCredentialsAsync()
+    {
+        await _database.OpenAsync();
+        using var cmdQueryCredentials = _database.CreateCommand();
+        cmdQueryCredentials.CommandText = "SELECT * FROM credentials";
+        using var readQueryCredentials = await cmdQueryCredentials.ExecuteReaderAsync();
+        var credentials = new List<Credential>();
+        while (await readQueryCredentials.ReadAsync())
+        {
+            credentials.Add(new Credential(readQueryCredentials.GetInt32(0), readQueryCredentials.GetString(1), readQueryCredentials.IsDBNull(2) ? null : new Uri(readQueryCredentials.GetString(2)), readQueryCredentials.IsDBNull(3) ? null : readQueryCredentials.GetString(3), readQueryCredentials.IsDBNull(4) ? null : readQueryCredentials.GetString(4)));
+        }
+        await _database.CloseAsync();
+        return credentials;
     }
 
     /// <summary>

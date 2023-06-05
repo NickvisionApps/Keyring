@@ -7,10 +7,16 @@ namespace Nickvision.Keyring;
 /// <summary>
 /// The Keyring object
 /// </summary>
-public class Keyring
+public class Keyring : IDisposable
 {
+    private bool _disposed;
     private readonly Store _store;
     
+    /// <summary>
+    /// The name of the Keyring
+    /// </summary>
+    public string Name => _store.Name;
+
     /// <summary>
     /// Constructs a Keyring. The Keyring will first attempt to load the Store. If the Store doesn't exist, it will create a new Store
     /// </summary>
@@ -19,9 +25,10 @@ public class Keyring
     /// <exception cref="ArgumentException">Thrown if the Store exists and the connection cannot be established</exception>
     public Keyring(string name, string password)
     {
+        _disposed = false;
         try
         {
-            _store = Store.Load(name, password);
+            _store = Store.Load(Name, password);
         }
         catch (ArgumentException e)
         {
@@ -29,9 +36,54 @@ public class Keyring
         }
         catch
         {
-            _store = Store.Create(name, password, true);
+            _store = Store.Create(Name, password, false);
         }
     }
+
+    /// <summary>
+    /// Frees resources used by the Keyring object
+    /// </summary>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Frees resources used by the Keyring object
+    /// </summary>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+        if (disposing)
+        {
+            _store.Dispose();
+        }
+        _disposed = true;
+    }
+
+    /// <summary>
+    /// Destroys the Keyring and all its data, including the store. Once this method is called, this object should not be used anymore.
+    /// </summary>
+    /// <returns>True if successful, else false</returns>
+    public bool Destroy()
+    {
+        if(_store.Destroy())
+        {
+            Dispose();
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Gets all credentials from the Keyring
+    /// </summary>
+    /// <returns>The list of Credential objects</returns>
+    public async Task<List<Credential>> GetAllCredentialsAsync() => await _store.GetAllCredentialsAsync();
 
     /// <summary>
     /// Lookups a credential by id
