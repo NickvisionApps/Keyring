@@ -184,6 +184,7 @@ internal class Store : IDisposable
     /// Adds a Credential to the store
     /// </summary>
     /// <param name="credential">The Credential object to add</param>
+    /// <returns>True if successful, else false</returns>
     public async Task<bool> AddCredentialAsync(Credential credential)
     {
         await _database.OpenAsync();
@@ -200,9 +201,10 @@ internal class Store : IDisposable
     }
 
     /// <summary>
-    /// Updates a Credential in the store
+    /// Updates a Credential in the Store
     /// </summary>
     /// <param name="credential">The Credential object to update</param>
+    /// <returns>True if successful, else false</returns>
     public async Task<bool> UpdateCredentialAsync(Credential credential)
     {
         await _database.OpenAsync();
@@ -222,6 +224,7 @@ internal class Store : IDisposable
     /// Removes a Credential from the store
     /// </summary>
     /// <param name="id">The id of the credential to remove</param>
+    /// <returns>True if successful, else false</returns>
     public async Task<bool> DeleteCredentialAsync(int id)
     {
         await _database.OpenAsync();
