@@ -180,7 +180,12 @@ internal class Store : IDisposable
         var credentials = new List<Credential>();
         while (await readQueryCredentials.ReadAsync())
         {
-            credentials.Add(new Credential(readQueryCredentials.GetInt32(0), readQueryCredentials.GetString(1), readQueryCredentials.IsDBNull(2) ? null : new Uri(readQueryCredentials.GetString(2)), readQueryCredentials.IsDBNull(3) ? null : readQueryCredentials.GetString(3), readQueryCredentials.IsDBNull(4) ? null : readQueryCredentials.GetString(4)));
+            var id = readQueryCredentials.GetInt32(0);
+            var name = readQueryCredentials.GetString(1);
+            var uri = readQueryCredentials.IsDBNull(2) ? null : string.IsNullOrEmpty(readQueryCredentials.GetString(2)) ? null : new Uri(readQueryCredentials.GetString(2));
+            var username = readQueryCredentials.IsDBNull(3) ? "" : readQueryCredentials.GetString(3);
+            var password = readQueryCredentials.IsDBNull(4) ? "" : readQueryCredentials.GetString(4);
+            credentials.Add(new Credential(id, name, uri, username, password));
         }
         await _database.CloseAsync();
         return credentials;
@@ -202,7 +207,12 @@ internal class Store : IDisposable
         if (readQueryCredential.HasRows)
         {
             await readQueryCredential.ReadAsync();
-            credential = new Credential(readQueryCredential.GetInt32(0), readQueryCredential.GetString(1), readQueryCredential.IsDBNull(2) ? null : new Uri(readQueryCredential.GetString(2)), readQueryCredential.IsDBNull(3) ? null : readQueryCredential.GetString(3), readQueryCredential.IsDBNull(4) ? null : readQueryCredential.GetString(4));
+            var i = readQueryCredential.GetInt32(0);
+            var name = readQueryCredential.GetString(1);
+            var uri = readQueryCredential.IsDBNull(2) ? null : string.IsNullOrEmpty(readQueryCredential.GetString(2)) ? null : new Uri(readQueryCredential.GetString(2));
+            var username = readQueryCredential.IsDBNull(3) ? "" : readQueryCredential.GetString(3);
+            var password = readQueryCredential.IsDBNull(4) ? "" : readQueryCredential.GetString(4);
+            credential = new Credential(i, name, uri, username, password);
         }
         await _database.CloseAsync();
         return credential;
@@ -223,7 +233,12 @@ internal class Store : IDisposable
         var credentials = new List<Credential>();
         while (await readQueryCredentials.ReadAsync())
         {
-            credentials.Add(new Credential(readQueryCredentials.GetInt32(0), readQueryCredentials.GetString(1), readQueryCredentials.IsDBNull(2) ? null : new Uri(readQueryCredentials.GetString(2)), readQueryCredentials.IsDBNull(3) ? null : readQueryCredentials.GetString(3), readQueryCredentials.IsDBNull(4) ? null : readQueryCredentials.GetString(4)));
+            var id = readQueryCredentials.GetInt32(0);
+            var n = readQueryCredentials.GetString(1);
+            var uri = readQueryCredentials.IsDBNull(2) ? null : string.IsNullOrEmpty(readQueryCredentials.GetString(2)) ? null : new Uri(readQueryCredentials.GetString(2));
+            var username = readQueryCredentials.IsDBNull(3) ? "" : readQueryCredentials.GetString(3);
+            var password = readQueryCredentials.IsDBNull(4) ? "" : readQueryCredentials.GetString(4);
+            credentials.Add(new Credential(id, n, uri, username, password));
         }
         await _database.CloseAsync();
         return credentials;
@@ -242,8 +257,8 @@ internal class Store : IDisposable
         cmdAddCredential.Parameters.AddWithValue("$id", credential.Id);
         cmdAddCredential.Parameters.AddWithValue("$name", credential.Name);
         cmdAddCredential.Parameters.AddWithValue("$uri", credential.Uri == null ? "" : credential.Uri.ToString());
-        cmdAddCredential.Parameters.AddWithValue("$username", credential.Username ?? "");
-        cmdAddCredential.Parameters.AddWithValue("$password", credential.Password ?? "");
+        cmdAddCredential.Parameters.AddWithValue("$username", credential.Username);
+        cmdAddCredential.Parameters.AddWithValue("$password", credential.Password);
         var result = await cmdAddCredential.ExecuteNonQueryAsync() > 0;
         await _database.CloseAsync();
         return result;
@@ -261,8 +276,8 @@ internal class Store : IDisposable
         cmdUpdateCredential.CommandText = "UPDATE credentials SET name = $name, uri = $uri, username = $username, password = $password where id = $id";
         cmdUpdateCredential.Parameters.AddWithValue("$name", credential.Name);
         cmdUpdateCredential.Parameters.AddWithValue("$uri", credential.Uri == null ? "" : credential.Uri.ToString());
-        cmdUpdateCredential.Parameters.AddWithValue("$username", credential.Username ?? "");
-        cmdUpdateCredential.Parameters.AddWithValue("$password", credential.Password ?? "");
+        cmdUpdateCredential.Parameters.AddWithValue("$username", credential.Username);
+        cmdUpdateCredential.Parameters.AddWithValue("$password", credential.Password);
         cmdUpdateCredential.Parameters.AddWithValue("$id", credential.Id);
         var result = await cmdUpdateCredential.ExecuteNonQueryAsync() > 0;
         await _database.CloseAsync();

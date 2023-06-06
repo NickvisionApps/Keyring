@@ -22,11 +22,11 @@ public class Credential : IComparable<Credential>, IEquatable<Credential>
     /// <summary>
     /// The username of the credential
     /// </summary>    
-    public string? Username { get; set; }
+    public string Username { get; set; }
     /// <summary>
     /// The password of the credential
     /// </summary>    
-    public string? Password { get; set; }
+    public string Password { get; set; }
     
     /// <summary>
     /// Constructs a Credential
@@ -35,7 +35,7 @@ public class Credential : IComparable<Credential>, IEquatable<Credential>
     /// <param name="uri">The uri of the credential</param>
     /// <param name="username">The username of the credential</param>
     /// <param name="password">The password of the credential</param>
-    public Credential(string name, Uri? uri, string? username, string? password)
+    public Credential(string name, Uri? uri, string username, string password)
     {
         Id = Guid.NewGuid().GetHashCode();
         Name = name;
@@ -52,7 +52,7 @@ public class Credential : IComparable<Credential>, IEquatable<Credential>
     /// <param name="uri">The uri of the credential</param>
     /// <param name="username">The username of the credential</param>
     /// <param name="password">The password of the credential</param>
-    internal Credential(int id, string name, Uri? uri, string? username, string? password)
+    internal Credential(int id, string name, Uri? uri, string username, string password)
     {
         Id = id;
         Uri = uri;

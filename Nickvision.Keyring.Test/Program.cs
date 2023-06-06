@@ -73,7 +73,7 @@ public class Program
                 Console.WriteLine($"===Credentials in {keyring.Name}===");
                 foreach(var credential in credentials)
                 {
-                    Console.WriteLine($"{credential.Name}: {credential.Id} => {(credential.Uri == null ? "N/A" : credential.Uri)} = {credential.Username ?? "N/A"} | {credential.Password ?? "N/A"}");
+                    Console.WriteLine($"{credential.Name}: {credential.Id} => {(credential.Uri == null ? "N/A" : credential.Uri)} = {(string.IsNullOrEmpty(credential.Username) ? "N/A" : credential.Username)} | {(string.IsNullOrEmpty(credential.Password) ? "N/A" : credential.Password)}");
                 }
                 Console.WriteLine("\nPress any key to continue...");
                 Console.ReadKey();
