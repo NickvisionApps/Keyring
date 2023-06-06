@@ -2,6 +2,8 @@
 
 # Nickvision.Keyring
 
+<img width='128' height='128' alt='Logo' src='Nickvision.Keyring/Resources/logo-r.svg'/>
+
  **Store credentials in a secure and easy fashion**
 
 # Features
