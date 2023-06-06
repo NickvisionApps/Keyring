@@ -6,24 +6,27 @@ on:
         types: [ "review_requested", "ready_for_review" ]
     workflow_dispatch:
 name: CI
+permissions:
+    id-token: write
+    contents: read
 jobs:
-    build-keyring:
+    keyring:
         name: "Build Nickvision.Keyring"
         runs-on: ubuntu-latest
         strategy:
             matrix:
                 dotnet-version: [ '7.0.x' ]
         steps:
-        - uses: actions/checkout@v3
-        - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
-          uses: actions/setup-dotnet@v3
-          with:
-              dotnet-version: ${{ matrix.dotnet-version }}
-        - name: Install dependencies
-          run: dotnet restore Nickvision.Keyring/Nickvision.Keyring.csproj
-        - name: Build
-          run: dotnet build Nickvision.Keyring/Nickvision.Keyring.csproj --configuration Release --no-restore
-    build-test:
+            - uses: actions/checkout@v3
+            - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+              uses: actions/setup-dotnet@v3
+              with:
+                  dotnet-version: ${{ matrix.dotnet-version }}
+            - name: Install dependencies
+              run: dotnet restore Nickvision.Keyring/Nickvision.Keyring.csproj
+            - name: Build
+              run: dotnet build Nickvision.Keyring/Nickvision.Keyring.csproj --configuration Release --no-restore
+    test:
         name: "Build Nickvision.Keyring.Test"
         runs-on: ubuntu-latest
         strategy:
@@ -31,11 +34,11 @@ jobs:
                 dotnet-version: [ '7.0.x' ]
         steps:
             - uses: actions/checkout@v3
-        - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
-          uses: actions/setup-dotnet@v3
-          with:
-              dotnet-version: ${{ matrix.dotnet-version }}
-        - name: Install dependencies
-          run: dotnet restore Nickvision.Keyring.Test/Nickvision.Keyring.Test.csproj
-        - name: Build
-          run: dotnet build Nickvision.Keyring.Test/Nickvision.Keyring.Test.csproj --configuration Release --no-restore      
+            - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+              uses: actions/setup-dotnet@v3
+              with:
+                  dotnet-version: ${{ matrix.dotnet-version }}
+            - name: Install dependencies
+              run: dotnet restore Nickvision.Keyring.Test/Nickvision.Keyring.Test.csproj
+            - name: Build
+              run: dotnet build Nickvision.Keyring.Test/Nickvision.Keyring.Test.csproj --configuration Release --no-restore
