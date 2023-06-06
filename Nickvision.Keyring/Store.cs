@@ -241,9 +241,9 @@ internal class Store : IDisposable
         cmdAddCredential.CommandText = "INSERT INTO credentials (id, name, uri, username, password) VALUES ($id, $name, $uri, $username, $password)";
         cmdAddCredential.Parameters.AddWithValue("$id", credential.Id);
         cmdAddCredential.Parameters.AddWithValue("$name", credential.Name);
-        cmdAddCredential.Parameters.AddWithValue("$uri", credential.Uri == null ? null : credential.Uri.ToString());
-        cmdAddCredential.Parameters.AddWithValue("$username", credential.Username);
-        cmdAddCredential.Parameters.AddWithValue("$password", credential.Password);
+        cmdAddCredential.Parameters.AddWithValue("$uri", credential.Uri == null ? "" : credential.Uri.ToString());
+        cmdAddCredential.Parameters.AddWithValue("$username", credential.Username ?? "");
+        cmdAddCredential.Parameters.AddWithValue("$password", credential.Password ?? "");
         var result = await cmdAddCredential.ExecuteNonQueryAsync() > 0;
         await _database.CloseAsync();
         return result;
@@ -260,9 +260,9 @@ internal class Store : IDisposable
         using var cmdUpdateCredential = _database.CreateCommand();
         cmdUpdateCredential.CommandText = "UPDATE credentials SET name = $name, uri = $uri, username = $username, password = $password where id = $id";
         cmdUpdateCredential.Parameters.AddWithValue("$name", credential.Name);
-        cmdUpdateCredential.Parameters.AddWithValue("$uri", credential.Uri == null ? null : credential.Uri.ToString());
-        cmdUpdateCredential.Parameters.AddWithValue("$username", credential.Username);
-        cmdUpdateCredential.Parameters.AddWithValue("$password", credential.Password);
+        cmdUpdateCredential.Parameters.AddWithValue("$uri", credential.Uri == null ? "" : credential.Uri.ToString());
+        cmdUpdateCredential.Parameters.AddWithValue("$username", credential.Username ?? "");
+        cmdUpdateCredential.Parameters.AddWithValue("$password", credential.Password ?? "");
         cmdUpdateCredential.Parameters.AddWithValue("$id", credential.Id);
         var result = await cmdUpdateCredential.ExecuteNonQueryAsync() > 0;
         await _database.CloseAsync();
