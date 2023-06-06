@@ -39,7 +39,7 @@ public class Keyring : IDisposable
         {
             return new Keyring(Store.Load(name, password));
         }
-        catch (ArgumentException e)
+        catch (ArgumentException)
         {
             return null;
         }
