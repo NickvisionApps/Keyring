@@ -14,19 +14,19 @@ public class Credential : IComparable<Credential>, IEquatable<Credential>
     /// <summary>
     /// The name of the credential
     /// </summary>    
-    public string Name { get; init; }
+    public string Name { get; set; }
     /// <summary>
     /// The uri of the credential
     /// </summary>    
-    public Uri? Uri { get; init; }
+    public Uri? Uri { get; set; }
     /// <summary>
     /// The username of the credential
     /// </summary>    
-    public string? Username { get; init; }
+    public string? Username { get; set; }
     /// <summary>
     /// The password of the credential
     /// </summary>    
-    public string? Password { get; init; }
+    public string? Password { get; set; }
     
     /// <summary>
     /// Constructs a Credential
