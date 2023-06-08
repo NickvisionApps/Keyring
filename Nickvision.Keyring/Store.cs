@@ -53,6 +53,7 @@ internal class Store : IDisposable
     /// <param name="name">The name of the Store</param>
     /// <param name="password">The password to use to encrypt the Store</param>
     /// <param name="overwrite">Whether or not to overwrite an existing Store at the path</param>
+    /// <exception cref="ArgumentException">Thrown if the name or password is empty</exception>
     /// <exception cref="IOException">Thrown if a Store exists at the provided path and overwrite is false</exception>
     /// <returns>The new Store object</returns>
     public static Store Create(string name, string password, bool overwrite)
@@ -60,6 +61,14 @@ internal class Store : IDisposable
         if(!Directory.Exists(StoreDir))
         {
             Directory.CreateDirectory(StoreDir);
+        }
+        if(string.IsNullOrEmpty(name))
+        {
+            throw new ArgumentException("The name to create a Store must not be empty.");
+        }
+        if(string.IsNullOrEmpty(password))
+        {
+            throw new ArgumentException("The password to create a Store must not be empty.");
         }
         var path = $"{StoreDir}{name}.nring";
         if(File.Exists(path))
@@ -87,11 +96,20 @@ internal class Store : IDisposable
     /// </summary>
     /// <param name="name">The name of the Store</param>
     /// <param name="password">The password to use to access the Store</param>
+    /// <exception cref="ArgumentException">Thrown if the name or password is empty</exception>
     /// <exception cref="FileNotFoundException">Thrown if a Store does not exist at the provided path</exception>
-    /// <exception cref="ArgumentException">Thrown if the Store connection cannot be established</exception>
+    /// <exception cref="IOException">Thrown if the Store connection cannot be established</exception>
     /// <returns>The loaded Store object</returns>
     public static Store Load(string name, string password)
     {
+        if(string.IsNullOrEmpty(name))
+        {
+            throw new ArgumentException("The name to create a Store must not be empty.");
+        }
+        if(string.IsNullOrEmpty(password))
+        {
+            throw new ArgumentException("The password to create a Store must not be empty.");
+        }
         var path = $"{StoreDir}{name}.nring";
         if(!File.Exists(path))
         {
@@ -109,7 +127,7 @@ internal class Store : IDisposable
         }
         catch
         {
-            throw new ArgumentException("Unable to access the Store. Make sure the password is correct.");
+            throw new IOException("Unable to access the Store. Make sure the password is correct.");
         }
     }
     

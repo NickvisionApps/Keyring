@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Nickvision.Keyring;
@@ -39,13 +40,13 @@ public class Keyring : IDisposable
         {
             return new Keyring(Store.Load(name, password));
         }
-        catch (ArgumentException)
+        catch (FileNotFoundException)
         {
-            return null;
+            return new Keyring(Store.Create(name, password, false));
         }
         catch
         {
-            return new Keyring(Store.Create(name, password, false));
+            return null;
         }
     }
 
