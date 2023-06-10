@@ -8,7 +8,7 @@
 
 # Features
 - A keyring library backed by SQLCipher
-    - Keyrings are platform-independent and can be exported and transfered to other systems, even with different operating systems. 
+    - Keyrings are platform-independent and can be exported and transferred to other systems, even with different operating systems. 
 
 # Installation
 <a href='https://www.nuget.org/packages/Nickvision.Keyring/'><img width='140' alt='Download on Nuget' src='https://www.nuget.org/Content/gallery/img/logo-header.svg'/></a>
