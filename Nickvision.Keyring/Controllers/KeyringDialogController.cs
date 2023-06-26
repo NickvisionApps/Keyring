@@ -27,7 +27,7 @@ public class KeyringDialogController
     /// <summary>
     /// The Keyring managed by the dialog
     /// </summary>
-    internal Models.Keyring? Keyring { get; private set; }
+    public Models.Keyring? Keyring { get; private set; }
 
     /// <summary>
     /// Whether or not the Keyring is enabled
