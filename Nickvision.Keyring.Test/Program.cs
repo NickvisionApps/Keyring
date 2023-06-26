@@ -1,4 +1,4 @@
-﻿using Nickvision.Keyring;
+﻿using Nickvision.Keyring.Models;
 using System;
 using System.Threading.Tasks;
 
@@ -33,7 +33,7 @@ public class Program
             {
                 Console.Write("\nName: ");
                 var name = Console.ReadLine();
-                Console.WriteLine(Keyring.Exists(name) ? "The keyring exists." : "The keyring does not exist.");
+                Console.WriteLine(Models.Keyring.Exists(name) ? "The keyring exists." : "The keyring does not exist.");
                 Console.WriteLine("\nPress any key to continue...");
                 Console.ReadKey();
             }
@@ -46,7 +46,7 @@ public class Program
     
     private async Task KeyringViewAsync(string name, string password)
     {
-        var keyring = Keyring.Access(name, password);
+        var keyring = Models.Keyring.Access(name, password);
         if(keyring == null)
         {
             Console.WriteLine("Unable to access the keyring.\n\nPress any key to continue...");

@@ -5,7 +5,7 @@ using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Nickvision.Keyring;
+namespace Nickvision.Keyring.Models;
 
 /// <summary>
 /// A store object for credentials. Backed by SQLCipher

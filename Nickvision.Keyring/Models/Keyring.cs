@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Nickvision.Keyring;
+namespace Nickvision.Keyring.Models;
 
 /// <summary>
 /// The Keyring object
