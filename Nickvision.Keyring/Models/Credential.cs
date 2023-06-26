@@ -1,6 +1,6 @@
 using System;
 
-namespace Nickvision.Keyring;
+namespace Nickvision.Keyring.Models;
     
 /// <summary>
 /// A model of a credential stored in the keyring

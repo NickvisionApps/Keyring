@@ -4,7 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <PackageId>Nickvision.Keyring</PackageId>
-    <Version>2023.6.3</Version>
+    <Version>2023.6.4</Version>
     <Company>Nickvision</Company>
     <Authors>Nickvision</Authors>
     <Description>Store credentials in a secure and easy fashion</Description>
@@ -13,7 +13,9 @@
     <Copyright>(c) Nickvision 2021-2023</Copyright>
     <PackageProjectUrl>https://nickvision.org</PackageProjectUrl>
     <RepositoryUrl>https://github.com/NickvisionApps/Keyring</RepositoryUrl>
-    <PackageReleaseNotes>- Improved error checks</PackageReleaseNotes>
+    <PackageReleaseNotes>- Moved Credential, Keyring, and Store to Models namespace
+    - Created Controllers.KeyringDialogController
+    - Created Controls.IKeyringDialog</PackageReleaseNotes>
     <PackageIcon>logo-r.png</PackageIcon>
   </PropertyGroup>
 
